@@ -1,0 +1,46 @@
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.github.pannowak.repomybatis.mapper.EmployeeMapper">
+
+    <resultMap id="employeeMap" type="Employee">
+        <id property="id" column="ID"/>
+        <result property="firstName" column="FIRST_NAME"/>
+        <result property="lastName" column="LAST_NAME"/>
+        <association property="address" javaType="Address">
+            <result property="street" column="STREET"/>
+            <result property="city" column="CITY"/>
+        </association>
+    </resultMap>
+
+    <sql id="selectEmployee">
+        select ID, FIRST_NAME, LAST_NAME, STREET, CITY from EMPLOYEES
+    </sql>
+    
+    <select id="findById" resultMap="employeeMap">
+        <include refid="selectEmployee"/> where ID = #{id}
+    </select>
+
+    <select id="findAll" resultMap="employeeMap">
+        <include refid="selectEmployee"/>
+    </select>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        insert into EMPLOYEES (FIRST_NAME, LAST_NAME, STREET, CITY)
+        values (#{firstName},#{lastName},#{address.street},#{address.city})
+    </insert>
+
+    <update id="update">
+        update EMPLOYEES
+        set
+            FIRST_NAME = #{firstName},
+            LAST_NAME = #{lastName},
+            STREET = #{address.street},
+            CITY = #{address.city}
+        where ID = #{id};
+    </update>
+    
+    <delete id="deleteById">
+        delete from EMPLOYEES where ID = #{id}
+    </delete>
+</mapper>
